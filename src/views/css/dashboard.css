@@ -1,0 +1,182 @@
+/* Aseguramos que la barra de navegación use Flexbox */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.navbar-brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+/* Contenedor de los enlaces de navegación */
+.navbar-links {
+    display: flex; /* Usamos flex para alinearlos en una fila */
+    gap: 20px; /* Espacio entre los enlaces */
+    justify-content: center; /* Alineamos al centro */
+    flex-grow: 1;
+}
+
+/* Añadir este estilo al CSS */
+.navbar-nav {
+    display: flex;
+    justify-content: center; /* Centra los elementos horizontalmente */
+    width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+}
+
+/* Alineación del botón de usuario a la derecha */
+.ml-auto {
+    margin-left: auto;
+}
+
+/* Ajustes para que el menú se alinee correctamente en pantallas grandes y pequeñas */
+@media (max-width: 991px) {
+    .navbar-links {
+        justify-content: flex-start; /* Si la pantalla es pequeña, los enlaces se alinean a la izquierda */
+    }
+}
+
+@media (max-width: 1000px) {
+    #content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .card img {
+        width: 60px;
+        height: 60px;
+    }
+}
+@media (max-width: 670px) {
+    .card {
+        margin-bottom: 20px;
+    }
+    .card img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+ /* Estilos personalizados para el footer */
+ footer {
+    background-color: #324458; /* Color de fondo */
+    color: white;
+    margin-top: -300px;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer .social-icons {
+    margin-top: 10px;
+}
+
+footer .social-icons a {
+    color: white;
+    font-size: 24px;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+footer .social-icons a:hover {
+    color: #007bff;
+}
+
+/* Estilos para el header */
+header nav {
+    background-color: #324458;
+    padding: 15px;
+}
+
+header .navbar-brand img {
+    max-height: 50px;
+}
+
+header .navbar-links .nav-item .nav-link {
+    color: black;
+    font-size: 18px;
+}
+
+header .navbar-links .nav-item .nav-link:hover {
+    color: #007bff;
+}
+
+/* Estilos del footer */
+footer .container {
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-top: -80px;
+}
+
+footer .row {
+    justify-content: center;
+}
+
+footer .social-icons {
+    margin-top: 10px;
+}
+
+footer .social-icons a {
+    color: white;
+    font-size: 24px;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+footer .social-icons a:hover {
+    color: #007bff;
+}
+
+footer .addresses {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+footer .address-box {
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+footer .address-box p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+    footer {
+        padding: 30px 10px;
+    }
+
+    footer .social-icons {
+        margin-top: 15px;
+    }
+
+    footer p {
+        font-size: 14px;
+    }
+}
+
+.footer-logo {
+    width: 100px;  /* Tamaño más pequeño */
+    margin-left: -20px;  /* Desplazar hacia la izquierda */
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+}

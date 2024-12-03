@@ -1,0 +1,36 @@
+body {
+    background-color: #f4f4f4;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-container img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.modal-header.bg-danger {
+    background-color: #dc3545 !important;
+    color: white;
+}
+
+.modal-body p {
+    font-size: 1.1rem;
+    margin: 0;
+}
