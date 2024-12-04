@@ -12,17 +12,17 @@ class Confluences {
     this.tokens = token;
 
     const response = await new HttpRequestBuilder(this.URL_CONFLUENCE + "wiki/api/v2/spaces")
-        .get()
-        .auth(this.user, this.tokens)
-        .send();
+      .get()
+      .auth(this.user, this.tokens)
+      .send();
 
     // Verifica si la respuesta fue exitosa (suponiendo que el código de estado es 200 para éxito)
     if (response.statusCode === 200) {
-        return true;  // Usuario válido
+      return true;  // Usuario válido
     } else {
-        return false;  // Usuario no válido
+      return false;  // Usuario no válido
     }
-}
+  }
 
   static async getSpaces(username, token) {
     this.user = username;
@@ -118,40 +118,40 @@ class Confluences {
 
   static async createStructureFolderConfluence(space, name, parent) {
     const bodyRequest = {
-        "spaceId": space,
-        "status": "current",
-        "title": name,
-        "parentId": parent,
-        "body": {
-            "representation": "storage",
-            "value": ""
-        }
+      "spaceId": space,
+      "status": "current",
+      "title": name,
+      "parentId": parent,
+      "body": {
+        "representation": "storage",
+        "value": ""
+      }
     };
 
     try {
-        // Verifica si el objeto HttpRequestBuilder se está construyendo correctamente
-        const request = new HttpRequestBuilder(this.URL_CONFLUENCE + "wiki/api/v2/pages")
-            .post()
-            .auth(this.user, this.tokens);
+      // Verifica si el objeto HttpRequestBuilder se está construyendo correctamente
+      const request = new HttpRequestBuilder(this.URL_CONFLUENCE + "wiki/api/v2/pages")
+        .post()
+        .auth(this.user, this.tokens);
 
-        // Enviar la solicitud
-        const response = await request.sendWithBody(bodyRequest);
+      // Enviar la solicitud
+      const response = await request.sendWithBody(bodyRequest);
 
-        // Verifica el estado de la respuesta
-        if (response.statusCode === 200) {
-            const responseBody = JSON.parse(response.body);
-            return responseBody.id;
-        } else {
-            console.error("Error: Response Code " + response.statusCode);
-        }
+      // Verifica el estado de la respuesta
+      if (response.statusCode === 200) {
+        const responseBody = JSON.parse(response.body);
+        return responseBody.id;
+      } else {
+        console.error("Error: Response Code " + response.statusCode);
+      }
     } catch (e) {
-        console.error('Error during request:', e);
+      console.error('Error during request:', e);
     }
 
     return null;
-}
+  }
 
-  static async createPages(spaceId, title, subPageId) {
+  static async createPagesEstructuraFirst(spaceId, title, subPageId) {
     let responseRQ = await this.createStructureFolderConfluence(spaceId, title, subPageId);
     if (!responseRQ) {
       responseRQ = await this.validateExistPage(title, subPageId);
@@ -176,6 +176,60 @@ class Confluences {
 
     await this.createStructureFolderConfluence(spaceId, title + " Correos posproduccion", responseProduccion);
   }
+
+  static async createPagesEstructuraSecond(spaceId, title, subPageId) {
+    let responseRQ = await this.createStructureFolderConfluence(spaceId, title, subPageId);
+    if (!responseRQ) {
+      responseRQ = await this.validateExistPage(title, subPageId);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Anexos", responseRQ);
+    await this.createStructureFolderConfluence(spaceId, title + " Planeacion", responseRQ);
+    await this.createStructureFolderConfluence(spaceId, title + " Certificacion", responseRQ);
+
+    let responseEjecicion = await this.createStructureFolderConfluence(spaceId, title + " Ejecucion", responseRQ);
+    if (!responseEjecicion) {
+      responseEjecicion = await this.validateExistPage(title + " Ejecucion", responseRQ);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Ciclo 1", responseEjecicion);
+
+    let responseProduccion = await this.createStructureFolderConfluence(spaceId, title + " posproduccion", responseRQ);
+  }
+
+  static async createPagesEstructuraThird(spaceId, title, subPageId) {
+    let responseRQ = await this.createStructureFolderConfluence(spaceId, title, subPageId);
+    if (!responseRQ) {
+      responseRQ = await this.validateExistPage(title, subPageId);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Certificacion", responseRQ);
+
+    let responseEjecicion = await this.createStructureFolderConfluence(spaceId, title + " Ejecucion", responseRQ);
+    if (!responseEjecicion) {
+      responseEjecicion = await this.validateExistPage(title + " Ejecucion", responseRQ);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Ciclo 1", responseEjecicion);
+  }
+
+  static async createPagesEstructuraFourth(spaceId, title, subPageId) {
+    let responseRQ = await this.createStructureFolderConfluence(spaceId, title, subPageId);
+    if (!responseRQ) {
+      responseRQ = await this.validateExistPage(title, subPageId);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Planeacion", responseRQ);
+    await this.createStructureFolderConfluence(spaceId, title + " Certificacion", responseRQ);
+
+    let responseEjecicion = await this.createStructureFolderConfluence(spaceId, title + " Ejecucion", responseRQ);
+    if (!responseEjecicion) {
+      responseEjecicion = await this.validateExistPage(title + " Ejecucion", responseRQ);
+    }
+
+    await this.createStructureFolderConfluence(spaceId, title + " Ciclo 1", responseEjecicion);
+  }
+
 }
 
 module.exports = Confluences;

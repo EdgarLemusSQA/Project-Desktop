@@ -12,5 +12,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getPagesForSpace: (idSpace) => ipcRenderer.invoke('getPagesForSpace', { idSpace }),
     getPagesForParent: (idSpaceParent) => ipcRenderer.invoke('getPagesForParent', { idSpaceParent }),
     validateExistUserHistory: (issue) => ipcRenderer.invoke('validateExistUserHistory', { issue }),
-    createPages: (spaceId, title, subPageId) => ipcRenderer.invoke('createPages', { spaceId, title, subPageId })
+    createPages: (structure, spaceId, title, subPageId) => ipcRenderer.invoke('createPages', { structure, spaceId, title, subPageId })
 });

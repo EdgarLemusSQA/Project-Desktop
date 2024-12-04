@@ -152,10 +152,27 @@ ipcMain.handle('validateExistUserHistory', async (event, { issue }) => {
     }
 });
 
-ipcMain.handle('createPages', async (event, { spaceId, title, subPageId }) => {
+ipcMain.handle('createPages', async (event, { structure, spaceId, title, subPageId }) => {
+    let isValid;
     try {
-        const isValid = await Confluences.createPages(spaceId, title, subPageId);
+        switch (structure) {
+            case 'Estructura 1':
+                isValid = await Confluences.createPagesEstructuraFirst(spaceId, title, subPageId);
+                break;
+            case 'Estructura 2':
+                isValid = await Confluences.createPagesEstructuraSecond(spaceId, title, subPageId);
+                break;
+            case 'Estructura 3':
+                isValid = await Confluences.createPagesEstructuraThird(spaceId, title, subPageId);
+                break;
+            case 'Estructura 4':
+                isValid = await Confluences.createPagesEstructuraFourth(spaceId, title, subPageId);
+                return { isValid };
+                break;
+        }
+
         return { isValid };
+
     } catch (error) {
         console.error('Error en la validación del usuario:', error);
         throw new Error('Error al validar el usuario');

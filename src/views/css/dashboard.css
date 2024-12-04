@@ -180,3 +180,11 @@ body, html {
     height: 100%;
     margin: 0;
 }
+
+.radio-link {
+    color: black;
+    text-decoration: none;
+}
+.radio-link:hover {
+    text-decoration: underline; /* Opcional: subrayar al pasar el mouse */
+}

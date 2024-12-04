@@ -15,16 +15,13 @@ document.getElementById('inicio').addEventListener('click', () => {
     getInfo();
 });
 
-function getInfo(){
+function getInfo() {
     const content = document.getElementById('content');
 
     fetch('pages/info.html')
         .then(response => response.text())
         .then(data => {
             content.innerHTML = data; // Carga el contenido en el div 'content'
-
-            // Ahora que el contenido está cargado, llama a la función que llena el primer select
-            showFirstDropdown(parsedSpaces.results);
         })
         .catch(error => console.error('Error al cargar el contenido:', error));
 }
@@ -124,10 +121,77 @@ function showThirdDropdown() {
 function showInputField() {
     const inputContainer = document.getElementById('inputContainer');
     inputContainer.innerHTML = `
+        <div id="radioGroup" class="d-flex mb-3">
+            <label class="me-3 d-flex align-items-center">
+                <input type="radio" name="structure" value="Estructura 1" class="me-1" checked>
+                <a href="#" class="radio-link" data-title="Estructura 1" data-image="img/Estructura 1.png">Estructura 1</a>
+            </label>
+            <label class="me-3 d-flex align-items-center">
+                <input type="radio" name="structure" value="Estructura 2" class="me-1">
+                <a href="#" class="radio-link" data-title="Estructura 2" data-image="img/Estructura 2.png">Estructura 2</a>
+            </label>
+            <label class="me-3 d-flex align-items-center">
+                <input type="radio" name="structure" value="Estructura 3" class="me-1">
+                <a href="#" class="radio-link" data-title="Estructura 3" data-image="img/Estructura 3.png">Estructura 3</a>
+            </label>
+            <label class="d-flex align-items-center">
+                <input type="radio" name="structure" value="Estructura 4" class="me-1">
+                <a href="#" class="radio-link" data-title="Estructura 4" data-image="img/Estructura 4.png">Estructura 4</a>
+            </label>
+        </div>
         <input id="textInput" type="text" class="form-control" placeholder="REQ-XXXX" required>
         <button id="submitButton" class="btn btn-primary mt-3" onclick="submitInput()">Enviar</button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageModalLabel">Título del Radio Button</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="" alt="Imagen asociada" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
     `;
+
+    // Agregar evento a cada enlace con clase "radio-link"
+    document.querySelectorAll('.radio-link').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
+            
+            const title = link.getAttribute('data-title');
+            const imageSrc = link.getAttribute('data-image');
+
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('imageModalLabel');
+            
+            // Actualizar contenido del modal
+            modalImage.src = imageSrc;
+            modalTitle.textContent = title;
+
+            // Mostrar el modal
+            const imageModalElement = document.getElementById('imageModal');
+            const imageModal = new bootstrap.Modal(imageModalElement);
+            imageModal.show();
+        });
+    });
+
+    // Evento para resetear el modal al cerrarse
+    const imageModalElement = document.getElementById('imageModal');
+    imageModalElement.addEventListener('hidden.bs.modal', () => {
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('imageModalLabel');
+
+        // Resetear contenido del modal
+        modalImage.src = '';
+        modalTitle.textContent = 'Título del Radio Button';
+    });
 }
+
 
 async function submitInput() {
 
@@ -136,31 +200,50 @@ async function submitInput() {
     const select2 = document.getElementById('dropdown2');
     const select3 = document.getElementById('dropdown3');
     const submitButton = document.getElementById('submitButton');
+    const radioGroup = document.getElementsByName('structure');
+    let selectedRadio = null;
 
-    disableElements(select1, select2, select3, textInput, submitButton);
+    // Verificar cuál radio button está seleccionado
+    for (const radio of radioGroup) {
+        if (radio.checked) {
+            selectedRadio = radio.value;
+            break;
+        }
+    }
+
+    if (!selectedRadio) {
+        // Mostrar mensaje de error si no hay radio button seleccionado
+        const modalMessage = document.getElementById('mandatoryFieldMessage');
+        modalMessage.textContent = "Por favor, selecciona una estructura.";
+        const mandatoryFieldModal = new bootstrap.Modal(document.getElementById('mandatoryFieldModal'));
+        mandatoryFieldModal.show();
+        return;
+    }
 
     if (!textInput.value.trim()) {
         const modalMessage = document.getElementById('mandatoryFieldMessage');
         modalMessage.textContent = "El campo de texto es obligatorio. Por favor, ingresa un Id de Historia de Usuario.";
-
         const mandatoryFieldModal = new bootstrap.Modal(document.getElementById('mandatoryFieldModal'));
         mandatoryFieldModal.show();
-        enableElements(select1, select2, select3, textInput, submitButton);
+        enableElements(select1, select2, select3, textInput, submitButton, radioGroup);
         return;
     }
 
     const isValid = await window.electronAPI.validateExistUserHistory(textInput.value);
 
-    if (isValid.isValid === "200") {
-        await window.electronAPI.createPages(spaceId, textInput.value, subPageId);
+    console.log(selectedRadio);
 
+    disableElements(select1, select2, select3, textInput, submitButton, radioGroup);
+
+    if (isValid.isValid === "200") {
+        await window.electronAPI.createPages(selectedRadio, spaceId, textInput.value, subPageId);
         // Mostrar el modal de éxito
         showSuccessModal("¡Las carpetas se crearon exitosamente en Confluence!");
-        enableElements(select1, select2, select3, textInput, submitButton);
+        enableElements(select1, select2, select3, textInput, submitButton, radioGroup);
     } else {
         // Mostrar el modal de error
         showErrorModal(isValid.isValid);
-        enableElements(select1, select2, select3, textInput, submitButton);
+        enableElements(select1, select2, select3, textInput, submitButton, radioGroup);
     }
 
     textInput.value = '';
@@ -189,23 +272,31 @@ function showSuccessModal(message) {
         const select3 = document.getElementById('dropdown3');
         const textInput = document.getElementById('textInput');
         const submitButton = document.getElementById('submitButton');
-        enableElements(select1, select2, select3, textInput, submitButton);
+        const radioGroup = document.getElementsByName('structure');
+        enableElements(select1, select2, select3, textInput, submitButton, radioGroup);
     });
 }
 
-function disableElements(select1, select2, select3, textInput, submitButton) {
+function disableElements(select1, select2, select3, textInput, submitButton, radioGroup) {
     if (select1) select1.disabled = true;
     if (select2) select2.disabled = true;
     if (select3) select3.disabled = true;
     if (textInput) textInput.disabled = true;
     if (submitButton) submitButton.disabled = true;
+    for (const radio of radioGroup) {
+        radio.checked = false;
+        radio.disabled = true;
+    }
 }
 
 // Función para habilitar los elementos
-function enableElements(select1, select2, select3, textInput, submitButton) {
+function enableElements(select1, select2, select3, textInput, submitButton, radioGroup) {
     if (select1) select1.disabled = false;
     if (select2) select2.disabled = false;
     if (select3) select3.disabled = false;
     if (textInput) textInput.disabled = false;
     if (submitButton) submitButton.disabled = false;
+    for (const radio of radioGroup) {
+        radio.disabled = false;
+    }
 }
